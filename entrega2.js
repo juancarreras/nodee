@@ -1,6 +1,7 @@
 const fs = require('fs')
 
-class contenedor {
+
+class ContenedorImport {
     constructor(title, price, thumbnail, id) {
         this.title = title;
         this.price = price;
@@ -55,7 +56,7 @@ class contenedor {
                 console.log(productos.filter(x => x.id === num));
             }
         } catch (err) {
-            console.error(err)
+            console.error({error: 'Producto no encontrado!'})
         };
     };
     getAll() {
@@ -70,6 +71,7 @@ class contenedor {
         } catch (err) {
             console.error(err)
         };
+        return productos;
     };
     deleteById(num) {
         let productos;
@@ -82,7 +84,7 @@ class contenedor {
                 ~removeIndex && productos.splice(removeIndex, 1);
             }
         } catch (err) {
-            console.error(err)
+            console.error({error: 'Producto no encontrado!'})
         };
 
         let dataToWrite = JSON.stringify(productos);
@@ -107,13 +109,60 @@ class contenedor {
             }
         });
     }
+    getRandom() {
+        let productosRandom;
+        let productoRandom;
+
+        try {
+            const data = fs.readFileSync('./products.txt', 'utf8')
+            if (data !== "") {
+                productosRandom = JSON.parse(data);
+                productoRandom = JSON.stringify(productosRandom[Math.floor(Math.random()*productosRandom.length)]);
+            }
+        } catch (err) {
+            console.error(err)
+        };
+        return productoRandom;
+    };
+    updateProduct(num, newTitle, newPrice, newThumbnail) {
+        let productos;
+
+        try {
+            const data = fs.readFileSync('./products.txt', 'utf8')
+            if (data !== "") {
+                productos = JSON.parse(data);
+                let updatingProduct = productos.map(item => item.id).indexOf(num);
+                ~removeIndex && productos.splice(removeIndex, 1);
+                if(newTitle){
+                    updatingProduct.title = newTitle;
+                };
+                if(newPrice){
+                    updatingProduct.price = newPrice;
+                };
+                if(newThumbnail){
+                    updatingProduct.imagen = newThumbnail;
+                };
+                updatingProduct.id = num;
+                productos.push(updatingProduct);
+
+            }
+        } catch (err) {
+            console.error(err)
+        };
+
+        let dataToWrite = JSON.stringify(productos);
+        fs.writeFile('./products.txt', `${dataToWrite}`, error => {
+            if (error) {
+                console.log("no se pudo agregar");
+            }
+            else {
+                console.log('Producto borrado!');
+
+            }
+        });
+    };
 }
 
-const usuario = new contenedor('Remera azul', 2000, 'https://www.remerasya.com/pub/media/catalog/product/cache/e4d64343b1bc593f1c5348fe05efa4a6/r/e/remera_azul_lisa_2.jpg');
+module.exports = ContenedorImport;
 
 
- usuario.save(usuario);
-// usuario.getByID(3);
-// usuario.getAll();
-// usuario.deleteById(4);
-// usuario.deleteAll();

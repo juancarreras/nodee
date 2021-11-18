@@ -1,53 +1,17 @@
+const ContenedorImport = require('./entrega2');
+const contenedor = new ContenedorImport();
+
 const fs = require('fs')
 const express = require('express');
-
+const cors = require('cors')
 const app = express();
 
 const PORT = 6000;
-
+const productsRouter = require('./routes/products');
 const server = app.listen(PORT, ()=> {
     console.log(`Servidor escuchando en el puerto ${server.address().port}`)
 });
-let productos;
-let productoRandom;
-let productosRandom;
-function getAll() {
-
-
-    try {
-        const data = fs.readFileSync('./products.txt', 'utf8')
-        if (data !== "") {
-            productos = data;
-            console.log(productos);
-        }
-    } catch (err) {
-        console.error(err)
-    };
-    return productos;
-};
-getAll();
-
-function getRandom() {
-    try {
-        const data = fs.readFileSync('./products.txt', 'utf8')
-        if (data !== "") {
-            productosRandom = JSON.parse(data);
-            productoRandom = JSON.stringify(productosRandom[Math.floor(Math.random()*productosRandom.length)]);
-        }
-    } catch (err) {
-        console.error(err)
-    };
-    return productoRandom;
-};
-getRandom();
-
-
-app.get('/productos', (req, res) => {
-    res.end(productos)
-});
-
-app.get('/producto-random', (req, res) => {
-    res.end(productoRandom)
-});
-
-
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+app.use(cors());
+app.use('/api/productos', productsRouter);
