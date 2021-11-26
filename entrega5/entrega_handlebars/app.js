@@ -14,6 +14,7 @@ try {
     console.error(err)
 }
 
+
 app.set('view engine','ejs');
 app.use(express.static('public'))
 app.use(express.json());
@@ -33,4 +34,4 @@ app.post('/products',(req,res)=>{
 
     }
 products.push(product);
-})
+});
